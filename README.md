@@ -1,44 +1,11 @@
 # com.aghstrategies.swmactivities
 
-![Screenshot](/images/screenshot.png)
+This extension allows system administrators to have system generated messages saved to an activity on the contact.
 
-(*FIXME: In one or two paragraphs, describe what the extension does and why one would download it. *)
+![Screenshot of settings form](/images/activityGeneratedByTheExtension.png)
 
-The extension is licensed under [AGPL-3.0](LICENSE.txt).
+## Set Up
+This extension creates a settings form at `civicrm/swmactivities/settings` this settings form contains one field "Message Templates to create activities for when sent" which lists System Workflow message templates. Go to this page and select the message templates you would like to be saved as activities.
 
-## Requirements
-
-* PHP v7.0+
-* CiviCRM (*FIXME: Version number*)
-
-## Installation (Web UI)
-
-This extension has not yet been published for installation via the web UI.
-
-## Installation (CLI, Zip)
-
-Sysadmins and developers may download the `.zip` file for this extension and
-install it with the command-line tool [cv](https://github.com/civicrm/cv).
-
-```bash
-cd <extension-dir>
-cv dl com.aghstrategies.swmactivities@https://github.com/FIXME/com.aghstrategies.swmactivities/archive/master.zip
-```
-
-## Installation (CLI, Git)
-
-Sysadmins and developers may clone the [Git](https://en.wikipedia.org/wiki/Git) repo for this extension and
-install it with the command-line tool [cv](https://github.com/civicrm/cv).
-
-```bash
-git clone https://github.com/FIXME/com.aghstrategies.swmactivities.git
-cv en swmactivities
-```
-
-## Usage
-
-(* FIXME: Where would a new user navigate to get started? What changes would they see? *)
-
-## Known Issues
-
-(* FIXME *)
+![Screenshot of settings form](/images/settingsForm.png)
+See the test file for a scenario.

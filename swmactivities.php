@@ -3,10 +3,11 @@
 require_once 'swmactivities.civix.php';
 use CRM_Swmactivities_ExtensionUtil as E;
 
-function swmactivities_civicrm_postEmailSend(&$params) {
-  if (!empty($params['groupName'] && !empty($params['valueName']))) {
+function swmactivities_civicrm_alterMailParams(&$params, $context) {
+  if ($context == 'singleEmail' && !empty($params['groupName'] && !empty($params['valueName']))) {
     $templates = CRM_Swmactivities_Form_Swmsettings::getSwmsettings();
-    if (in_array($params['valueName'], $templates['swmactivities_templates'])) {
+    if (
+      in_array($params['valueName'], $templates['swmactivities_templates']) && !empty($params['contactId'])) {
       try {
         $result = civicrm_api3('Activity', 'create', [
           'source_contact_id' => $params['contactId'],
