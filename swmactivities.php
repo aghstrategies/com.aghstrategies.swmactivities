@@ -6,7 +6,7 @@ use CRM_Swmactivities_ExtensionUtil as E;
 /**
  * Implements hook_civicrm_config().
  *
- * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_config/ 
+ * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_config/
  */
 function swmactivities_civicrm_config(&$config) {
   _swmactivities_civix_civicrm_config($config);

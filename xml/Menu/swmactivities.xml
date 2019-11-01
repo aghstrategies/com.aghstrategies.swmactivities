@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<menu>
+  <item>
+    <path>civicrm/swmactivities/settings</path>
+    <page_callback>CRM_Swmactivities_Form_Swmsettings</page_callback>
+    <title>System Workflow Messages Activities Settings</title>
+    <access_arguments>access CiviCRM</access_arguments>
+  </item>
+</menu>
