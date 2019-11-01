@@ -3,6 +3,30 @@
 require_once 'swmactivities.civix.php';
 use CRM_Swmactivities_ExtensionUtil as E;
 
+function swmactivities_civicrm_postEmailSend(&$params) {
+  if (!empty($params['groupName'] && !empty($params['valueName']))) {
+    $templates = CRM_Swmactivities_Form_Swmsettings::getSwmsettings();
+    if (in_array($params['valueName'], $templates['swmactivities_templates'])) {
+      try {
+        $result = civicrm_api3('Activity', 'create', [
+          'source_contact_id' => $params['contactId'],
+          'target_contact_id' => $params['contactId'],
+          'activity_type_id' => "Email",
+          'subject' => "System Workflow Message Sent: {$params['subject']}",
+          'details' => $params['text'],
+        ]);
+      }
+      catch (CiviCRM_API3_Exception $e) {
+        $error = $e->getMessage();
+        CRM_Core_Error::debug_log_message(ts('API Error %1', array(
+          'domain' => 'com.aghstrategies.swmactivities',
+          1 => $error,
+        )));
+      }
+    }
+  }
+}
+
 /**
  * Implements hook_civicrm_config().
  *

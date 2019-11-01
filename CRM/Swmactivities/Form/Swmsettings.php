@@ -8,12 +8,35 @@ use CRM_Swmactivities_ExtensionUtil as E;
  * @see https://docs.civicrm.org/dev/en/latest/framework/quickform/
  */
 class CRM_Swmactivities_Form_Swmsettings extends CRM_Core_Form {
-  public function buildQuickForm() {
 
+  public function getSwmsettings() {
+    try {
+      $setting = civicrm_api3('Setting', 'getsingle', array(
+        'return' => 'swmactivities_templates',
+      ));
+    }
+    catch (CiviCRM_API3_Exception $e) {
+      $error = $e->getMessage();
+      CRM_Core_Error::debug_log_message(ts('API Error %1', array(
+        'domain' => 'com.aghstrategies.swmactivities',
+        1 => $error,
+      )));
+    }
+    return $setting;
+  }
+
+  public function buildQuickForm() {
     // add form elements
     $this->addEntityRef('swmactivities_templates', ts('Message Templates to create activities for when sent'), array(
-      'entity' => 'MessageTemplate',
-      'api' => ['label_field' => "msg_title", 'search_field' => "msg_title"],
+      'entity' => 'OptionValue',
+      'api' => [
+        'label_field' => "label",
+        'search_field' => "label",
+        'id_field' => "name",
+        'params' => [
+          'option_group_id' => ['IN' => ["msg_tpl_workflow_case", "msg_tpl_workflow_contribution", "msg_tpl_workflow_event", "msg_tpl_workflow_friend", "msg_tpl_workflow_membership", "msg_tpl_workflow_meta", "msg_tpl_workflow_petition", "msg_tpl_workflow_pledge", "msg_tpl_workflow_volunteer", "msg_tpl_workflow_uf"]],
+        ],
+      ],
       'multiple' => TRUE,
       'select' => array('minimumInputLength' => 0),
     ));
@@ -26,18 +49,8 @@ class CRM_Swmactivities_Form_Swmsettings extends CRM_Core_Form {
       ),
     ));
 
-    try {
-      $default = civicrm_api3('Setting', 'getsingle', array(
-        'return' => 'swmactivities_templates',
-      ));
-    }
-    catch (CiviCRM_API3_Exception $e) {
-      $error = $e->getMessage();
-      CRM_Core_Error::debug_log_message(ts('API Error %1', array(
-        'domain' => 'com.aghstrategies.swmactivities',
-        1 => $error,
-      )));
-    }
+    $default = $this->getSwmsettings();
+    // print_r($default); die();
     if (!empty($default['swmactivities_templates'])) {
       $this->setDefaults($default);
     }
@@ -50,8 +63,24 @@ class CRM_Swmactivities_Form_Swmsettings extends CRM_Core_Form {
   public function postProcess() {
     $values = $this->exportValues();
     $setting = [];
-    if (!empty($values['swmsetting'])) {
-      $setting = explode(',', $values['swmsetting']);
+    if (!empty($values['swmactivities_templates'])) {
+      $setting = explode(',', $values['swmactivities_templates']);
+    }
+    foreach ($setting as $key => $messageTemplateId) {
+      try {
+        $options = civicrm_api3('MessageTemplate', 'get', [
+          'sequential' => 1,
+          'id' => $messageTemplateId,
+          'api.OptionValue.get' => ['id' => "\$value.workflow_id"],
+        ]);
+      }
+      catch (CiviCRM_API3_Exception $e) {
+        $error = $e->getMessage();
+        CRM_Core_Error::debug_log_message(ts('API Error %1', array(
+          'domain' => 'com.aghstrategies.swmactivities',
+          1 => $error,
+        )));
+      }
     }
 
     try {
@@ -66,7 +95,7 @@ class CRM_Swmactivities_Form_Swmsettings extends CRM_Core_Form {
         1 => $error,
       )));
     }
-    CRM_Core_Session::setStatus(E::ts('Settings have been updated'));
+    CRM_Core_Session::setStatus(E::ts('Settings have been updated'), SUCCESS, SUCCESS);
     parent::postProcess();
   }
 
