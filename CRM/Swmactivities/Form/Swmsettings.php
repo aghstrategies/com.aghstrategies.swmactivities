@@ -116,7 +116,7 @@ class CRM_Swmactivities_Form_Swmsettings extends CRM_Core_Form {
         1 => $error,
       )));
     }
-    CRM_Core_Session::setStatus(E::ts('Settings have been updated'), SUCCESS, SUCCESS);
+    CRM_Core_Session::setStatus(E::ts('Settings have been updated'), ts('Settings Updated'), 'success');
     parent::postProcess();
   }
 
