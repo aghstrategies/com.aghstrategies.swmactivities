@@ -26,6 +26,27 @@ class CRM_Swmactivities_Form_Swmsettings extends CRM_Core_Form {
   }
 
   public function buildQuickForm() {
+    $msgTemplateWorkflowOptionGroups = [];
+    try {
+      $checkWhatMessageTemplateWorkflowsExist = civicrm_api3('OptionGroup', 'get', [
+        'name' => ['IN' => ["msg_tpl_workflow_case", "msg_tpl_workflow_contribution", "msg_tpl_workflow_event", "msg_tpl_workflow_friend", "msg_tpl_workflow_membership", "msg_tpl_workflow_meta", "msg_tpl_workflow_petition", "msg_tpl_workflow_pledge", "msg_tpl_workflow_volunteer", "msg_tpl_workflow_uf"]],
+      ]);
+    }
+    catch (CiviCRM_API3_Exception $e) {
+      $error = $e->getMessage();
+      CRM_Core_Error::debug_log_message(ts('API Error %1', array(
+        'domain' => 'com.aghstrategies.swmactivities',
+        1 => $error,
+      )));
+    }
+    if (!empty($checkWhatMessageTemplateWorkflowsExist['values'])) {
+      foreach ($checkWhatMessageTemplateWorkflowsExist['values'] as $key => $optionGroup) {
+        if (!empty($optionGroup['name'])) {
+          $msgTemplateWorkflowOptionGroups[] = $optionGroup['name'];
+        }
+      }
+    }
+
     // add form elements
     $this->addEntityRef('swmactivities_templates', ts('Message Templates to create activities for when sent'), array(
       'entity' => 'OptionValue',
@@ -34,7 +55,7 @@ class CRM_Swmactivities_Form_Swmsettings extends CRM_Core_Form {
         'search_field' => "label",
         'id_field' => "name",
         'params' => [
-          'option_group_id' => ['IN' => ["msg_tpl_workflow_case", "msg_tpl_workflow_contribution", "msg_tpl_workflow_event", "msg_tpl_workflow_friend", "msg_tpl_workflow_membership", "msg_tpl_workflow_meta", "msg_tpl_workflow_petition", "msg_tpl_workflow_pledge", "msg_tpl_workflow_volunteer", "msg_tpl_workflow_uf"]],
+          'option_group_id' => ['IN' => $msgTemplateWorkflowOptionGroups],
         ],
       ],
       'multiple' => TRUE,
